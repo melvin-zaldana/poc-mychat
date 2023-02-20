@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "MyChat",
+    "version": "1.0.0",
+    "description": "Save text and read answers with this extension.",
+    "browser_action": {
+      "default_icon": "assets/icon.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+      },
+    "permissions": ["tabs", "storage","contextMenus","activeTab","scripting"],
+    "action": {
+        "default_icon": {
+          "16": "assets/icon-16.png",
+          "32": "assets/icon-32.png"
+        },
+        "default_title": "myChat"
+      },
+      "content_scripts":[{
+        "matches":["https://*/*"],
+        "css":["content-scripts/content-style.css"],
+        "js":["content-scripts/content-script.js","content-scripts/mychat_popup.js"]
+      }],
+    "icons":{
+        "16":"assets/icon-16.png"
+    }
+  }

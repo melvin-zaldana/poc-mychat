@@ -1,0 +1,121 @@
+#mychat_popup_div {
+    background-color: white;
+    position: fixed;
+    z-index: 999999;
+    top: 10%;
+    /* left: 75%; */
+    right: 0;
+    width: 300px;
+    border-radius: 8px 0px 0px 8px;
+    height: 530px;
+/*     -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); */
+    border: 1px solid #DEDEDE;
+    box-sizing: border-box;
+    padding: 10px;
+    display: none;
+    box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.15), -4px 4px 0px rgba(0, 0, 0, 0.1);
+  }
+
+  #myChat_close_sheet {
+    background: none;
+    border: none;
+  }
+
+   /* Style the tab */
+   #myChat_tabs_container {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+  }
+  
+  /* Style the buttons inside the tab */
+  #myChat_tabs_container button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 14px;
+  }
+  
+  /* Change background color of buttons on hover */
+  #myChat_tabs_container button:hover {
+    background-color: #ddd;
+  }
+  
+  /* Create an active/current tablink class */
+  #myChat_tabs_container button.active {
+    background-color: #ddd;
+  }
+  
+  /* Style the tab content */
+  .myChat_tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+
+  #myChat_tab_one{
+    display: block;
+  }
+
+  #mychat_popup_div form {
+    /* margin-top: 10px; */
+    width: 100%;
+    /* height: 90%; */
+    position: relative;
+    margin-top:10px;
+  }
+  
+  #mychat_popup_div input,textarea{
+    border: 1px solid #D8DFE7;
+    border-radius: 8px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 6px 12px;
+    margin:0;
+    margin-bottom: 10px;
+
+  }  
+  #mychat_popup_div input[type=text],input[type=email] {
+    width: 90%;
+  }
+  #mychat_popup_div textarea {
+    width: 90%;
+    resize: none;
+
+  }
+  #mychat_popup_div input[type=submit] {
+    width: 100%; 
+    background: #0000FF;
+    color: white;
+    border-color: transparent;
+    border-radius: 18px;
+    font-size: 14px;
+    text-align: center;
+  }
+  #mychat_popup_div input[type=submit]:hover {
+    background: #0000ffbb;
+  }
+
+  #myChat_tab_one #mychat_question_textarea{
+    height: 50px;
+    
+  }
+
+  #myChat_tab_two #mychat_new_data_textarea {
+    height: 335px;
+  }
+  #myChat_conversation_container{
+    border: 1px solid #D8DFE7;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+    height: 275px;
+  }
+
+ 
