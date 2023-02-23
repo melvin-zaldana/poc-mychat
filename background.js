@@ -1,5 +1,5 @@
 chrome.action.onClicked.addListener((tab) => {
-    console.log("ping click");
+//show myChay-popup created in content-script.js
     chrome.tabs.sendMessage(tab.id,{
         type: "NEW_DATA",
         content: "",
@@ -16,6 +16,7 @@ chrome.action.onClicked.addListener((tab) => {
   });
 
   chrome.contextMenus.onClicked.addListener((item,tab) => {
+    //send selectionText to addData Form
     const selectedText = item.selectionText;
     console.log(selectedText);
       chrome.tabs.sendMessage(tab.id,{

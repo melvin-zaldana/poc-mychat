@@ -47,10 +47,11 @@ const setTabsContent2 = (ParentElement) => {
     const container = document.createElement('div');
     container.id = "myChat_tab_two";
     container.className = "myChat_tabcontent";
-    container.innerHTML = `<form id="mychat_addData_form">
+    container.innerHTML = `
+    <form id="mychat_addData_form">
     <textarea id="mychat_new_data_textarea" placeholder="Texto"></textarea>
     <input type="submit" id="mychat_addData_submit" value="Agregar">
-</form>`;
+</form>`; //<button id="myChat_addData-website">+ web</button>
     ParentElement.appendChild(container);
 
 };
@@ -58,10 +59,27 @@ const setTabsContent3 = (ParentElement) => {
     const container = document.createElement('div');
     container.id = "myChat_tab_three";
     container.className = "myChat_tabcontent";
-    container.innerHTML = `<form>
-    <input type="text" placeholder="Ingrese su ID de cuenta">
-    <input type="submit" value="Guardar">
-    </form>`;
+    container.innerHTML = `<div id="myChat-login">
+    <form id="mychat_login_form">
+    <input type="email" id="mychat_login_email" placeholder="Email">
+    <input type="password" id="mychat_login_pass" placeholder="Constraseña">
+    <input type="submit" id="mychat_login_submit" value="Iniciar sesión">
+    </form>
+    <a id="mychat-show-signup">Crear nueva cuenta</a>
+    </div>
+    <div id="myChat-signup">
+    <form id="mychat_signup_form">
+    <input type="email" placeholder="Email" id="mychat_signup_email">
+    <input type="password" placeholder="Constraseña" id="mychat_signup_pass">
+    <input type="password" placeholder="Repetir Constraseña" id="mychat_signup_repass">
+    <input type="submit" value="Crear cuenta" id="mychat_signup_submit">
+    </form>
+    <a id="mychat-show-login">Entrar a mi cuenta</a>
+    </div>
+    <div id="myChat-account">
+    <p id="mychat-account-email"></p>
+    <a id="mychat-logout">Cerrar sesión</a>
+    </div>`;
     ParentElement.appendChild(container);
 
 };
@@ -86,38 +104,22 @@ setTabsContent(myChatPopupDiv);
 setTabsContent2(myChatPopupDiv);
 setTabsContent3(myChatPopupDiv);
 
-
-//WIP
-const rejectScriptTextFilter = {
-    acceptNode: function (node) {
-        //console.log(node.wholeText);
-        let match = /\r|\n/.exec(node.wholeText);
-        //console.log(match.length);
-        if (node.parentNode.nodeName !== 'SCRIPT' && match == null) {
-            console.log(node.wholeText);
-            return NodeFilter.FILTER_ACCEPT;
-        } else {
-            return NodeFilter.FILTER_REJECT
-        }
+chrome.storage.local.get(["userId", "userEmail"]).then((result) => {
+    if(result.userId && result.userEmail){
+        document.getElementById("myChat-account").style.display = "block";
+        document.getElementById("mychat-account-email").innerHTML = `Cuenta: ${result.userEmail}`;
+    } else {
+        console.log("Value currently is NOT ");
+        document.getElementById("myChat-signup").style.display = "block";
     }
-};
+});
 
-//WIP
-function textNodesUnder(root) {
-    var n, a = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, rejectScriptTextFilter
-        , false);
-    console.log(w);
-    while (n = w.nextNode()) a.push(n);
-    console.log(a);
-    return a;
-}
 
 chrome.runtime.onMessage.addListener((obj, sender, response) => {
     const { type, content } = obj;
     if (type === "NEW_DATA") {
         myChatPopupDiv.style.display = "block";
         if(content){
-            textNodesUnder(document.body);
             document.getElementById("mychat_new_data_textarea").value = content;
             document.getElementById("mychat_btn2").click();
         }

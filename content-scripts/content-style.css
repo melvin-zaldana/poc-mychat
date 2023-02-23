@@ -70,24 +70,33 @@
     position: relative;
     margin-top:10px;
   }
+  #mychat_popup_div #myChat-signup, #myChat-login, #myChat-account {
+    display: none;
+  }
+
+  #mychat_popup_div #myChat-account p {
+    font-size: 14px;
+  }
   
-  #mychat_popup_div input,textarea{
+  #mychat_popup_div form input,textarea{
     border: 1px solid #D8DFE7;
-    border-radius: 8px;
+    border-radius: 8px !important;
     background-color: white;
     display: flex;
     flex-direction: column;
-    padding: 6px 12px;
+    padding: 6px 12px !important;
     margin:0;
-    margin-bottom: 10px;
+    margin-bottom: 10px !important;
+    box-sizing: border-box;
+    font-size: 14px !important;
 
   }  
-  #mychat_popup_div input[type=text],input[type=email] {
-    width: 90%;
+  #mychat_popup_div form input[type=text],input[type=email],input[type=password] {
+    width: 100% !important;
   }
   #mychat_popup_div textarea {
-    width: 90%;
-    resize: none;
+    width: 100% !important;
+    resize: none !important;
 
   }
   #mychat_popup_div input[type=submit] {
@@ -95,8 +104,8 @@
     background: #0000FF;
     color: white;
     border-color: transparent;
-    border-radius: 18px;
-    font-size: 14px;
+    border-radius: 18px !important;
+    font-size: 14px !important;
     text-align: center;
   }
   #mychat_popup_div input[type=submit]:hover {
@@ -109,13 +118,18 @@
   }
 
   #myChat_tab_two #mychat_new_data_textarea {
-    height: 335px;
+    height: 300px;
   }
   #myChat_conversation_container{
     border: 1px solid #D8DFE7;
     border-radius: 8px;
     background-color: #f1f1f1;
     height: 275px;
+    overflow: scroll;
+  }
+
+  .mychat_user_message, .mychat_bot_message{
+    font-size: 14px !important;
   }
 
  
