@@ -59,10 +59,6 @@
     border-top: none;
   }
 
-  #myChat_tab_one{
-    display: block;
-  }
-
   #mychat_popup_div form {
     /* margin-top: 10px; */
     width: 100%;
@@ -127,9 +123,20 @@
     height: 275px;
     overflow: scroll;
   }
-
+  #myChat_conversation_container div{
+    /* background-color: #d8e4fe; */
+    display: flex;
+    
+  }
+  #myChat_conversation_container button {
+    background-color: transparent;
+    outline: 0px;
+    border: 0px;
+    margin: 0px;
+  }
   .mychat_user_message, .mychat_bot_message{
     font-size: 14px !important;
+    width: 100%;
   }
 
  

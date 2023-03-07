@@ -12,7 +12,7 @@ const setTabs = (ParentElement) =>{
     container.id = "myChat_tabs_container";
     const btn1 = document.createElement('button');
     btn1.innerHTML = "Chat";
-    btn1.className ="myChat_tablinks active";
+    btn1.className ="myChat_tablinks";
     btn1.id = "mychat_btn1";
     container.appendChild(btn1);
 
@@ -47,11 +47,11 @@ const setTabsContent2 = (ParentElement) => {
     const container = document.createElement('div');
     container.id = "myChat_tab_two";
     container.className = "myChat_tabcontent";
-    container.innerHTML = `
+    container.innerHTML = `<button id="mychat_addData-website">+ web</button>
     <form id="mychat_addData_form">
     <textarea id="mychat_new_data_textarea" placeholder="Texto"></textarea>
     <input type="submit" id="mychat_addData_submit" value="Agregar">
-</form>`; //<button id="myChat_addData-website">+ web</button>
+</form>`; //<button id="mychat_addData-website">+ web</button>
     ParentElement.appendChild(container);
 
 };
@@ -106,11 +106,19 @@ setTabsContent3(myChatPopupDiv);
 
 chrome.storage.local.get(["userId", "userEmail"]).then((result) => {
     if(result.userId && result.userEmail){
+        document.getElementById("mychat_btn1").className += " active";
+        document.getElementById("myChat_tab_one").style.display = "block";
         document.getElementById("myChat-account").style.display = "block";
         document.getElementById("mychat-account-email").innerHTML = `Cuenta: ${result.userEmail}`;
+        
     } else {
         console.log("Value currently is NOT ");
+        document.getElementById("mychat_btn3").className += " active";
+        document.getElementById("myChat_tab_three").style.display = "block";
         document.getElementById("myChat-signup").style.display = "block";
+        document.getElementById("mychat_btn1").disabled = true;
+        document.getElementById("mychat_btn2").disabled = true;
+        
     }
 });
 
@@ -122,6 +130,13 @@ chrome.runtime.onMessage.addListener((obj, sender, response) => {
         if(content){
             document.getElementById("mychat_new_data_textarea").value = content;
             document.getElementById("mychat_btn2").click();
+        }
+    } else if(type === "ANSWER_QUESTION"){
+        myChatPopupDiv.style.display = "block";
+        if(content){
+            document.getElementById("mychat_question_textarea").value = content;
+            document.getElementById("mychat_btn1").click();
+            document.getElementById("mychat_makeQuestion_form").requestSubmit();
         }
     } else {
         console.log(obj);

@@ -25,6 +25,31 @@ function switchAuthForm(elementid) {
     }
 }
 
+function CopyToClipboard(element) {
+    navigator.clipboard
+    .writeText(element.textContent)
+    .then(() => {
+        //alert("Copied the text: "+ element.textContent);
+    })
+    .catch(() => {
+      alert("Error: No se pudo copiar");
+    });
+    
+}
+
+const readLocalStorage = async (key) => {
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get([key], function (result) {
+        if (result[key] === undefined) {
+          reject();
+        } else {
+            console.log("Value currently is " + result.userId);
+            resolve(result[key]);
+        }
+      });
+    });
+  };
+
 const login = (email,pass) => {
     fetch("https://pm.masproducto.com/api/1.1/wf/login", {
         method: "POST",
@@ -48,6 +73,9 @@ const login = (email,pass) => {
                 console.log("Value is set to " + data.response.user_id);
                 document.getElementById("myChat-login").style.display = "none";
                 document.getElementById("myChat-account").style.display = "block";
+                document.getElementById("mychat-account-email").innerHTML = `Cuenta: ${email}`;
+                document.getElementById("mychat_btn1").disabled = false;
+                document.getElementById("mychat_btn2").disabled = false;
               });
           }
           document.getElementById("mychat_login_submit").disabled = false;
@@ -81,24 +109,10 @@ const signup = (email,pass,repass) => {
                 document.getElementById("myChat-signup").style.display = "none";
                 document.getElementById("myChat-account").style.display = "block";
                 document.getElementById("mychat-account-email").innerHTML = `Cuenta: ${email}`;
+                document.getElementById("mychat_btn1").disabled = false;
+                document.getElementById("mychat_btn2").disabled = false;
               });
-
-              
-              fetch("https://mychat-poc.herokuapp.com/createCSV", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({"userid":data.response.user_id}),
-            })
-                .then((response) => response.json())
-                .then((response) => {
-                    console.log(response);
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
-            
+        
           }
 
           document.getElementById("mychat_signup_submit").disabled = false;
@@ -116,15 +130,13 @@ const logout = () => {
       });
       document.getElementById("myChat-signup").style.display = "block";
       document.getElementById("myChat-account").style.display = "none";
+      document.getElementById("mychat_btn1").disabled = true;
+      document.getElementById("mychat_btn2").disabled = true;
 }
 
-const addData = (title, text) => {
-    let user_id;
-    chrome.storage.local.get(["userId"]).then((result) => {
-        console.log("Value currently is " + result.userId);
-        user_id = result.userId;
-      });
-
+async function addData(title, text) {
+    let user_id = await readLocalStorage("userId");
+    console.log("user_id " + user_id);
     const data = {
         "title": title,
         "content": text,
@@ -133,7 +145,7 @@ const addData = (title, text) => {
     };
 
 
-    fetch("https://mychat-poc.herokuapp.com/addData", {
+    fetch("https://mychat-poc.herokuapp.com/addDataPine", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -156,17 +168,14 @@ const addData = (title, text) => {
         });
 };
 
-const makeQuestion = (question) => {
-    let user_id;
-    chrome.storage.local.get(["userId"]).then((result) => {
-        console.log("Value currently is " + result.userId);
-        user_id = result.userId;
-      });
+async function makeQuestion(question){
+    let user_id = await readLocalStorage("userId");
     const data = {
         "question": question,
         "userid": user_id
     };
-    fetch("https://mychat-poc.herokuapp.com/Mychat", {
+    //console.log(data);
+    fetch("https://mychat-poc.herokuapp.com/MychatPine", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -189,14 +198,28 @@ const makeQuestion = (question) => {
 
 const addText = (message,sender) => {
     const container = document.getElementById("myChat_conversation_container");
+    const container_text = document.createElement('div');
     const paragraph = document.createElement('p');
+    paragraph.innerHTML = `<b>${sender}: </b>${message}`;
+    container_text.appendChild(paragraph);
+    
     if(sender === 'Tu'){
         paragraph.className = 'mychat_user_message';
     } else {
         paragraph.className = 'mychat_bot_message'; 
+        const copy_btn = document.createElement('button');
+        copy_btn.addEventListener("click", () => { CopyToClipboard(paragraph) });
+        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        svg.setAttribute('width','24px');
+        svg.setAttribute('height','24px');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute("d","M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm-1 4 6 6v10c0 1.1-.9 2-2 2H7.99C6.89 23 6 22.1 6 21l.01-14c0-1.1.89-2 1.99-2h7zm-1 7h5.5L14 6.5V12z"); //Set path's data
+        svg.appendChild(path);
+        copy_btn.appendChild(svg);
+        container_text.appendChild(copy_btn);
     }
-    paragraph.innerHTML = `<b>${sender}: </b>${message}`;
-    container.appendChild(paragraph);
+
+    container.appendChild(container_text);
     updateScroll(container,paragraph.offsetHeight)
 
 }
@@ -220,11 +243,11 @@ const addDataWebsite = () => {
         "jira":{
             elemento:"description-val",
             tipo:"id"
-        },
-        "docs.google": {
+        }
+/*         "docs.google": { // No soportado porque contenido esta dentro de un canva, se debe hacer vía API
             elemento:"kix-appview-editor",
             tipo:"class"
-        }
+        } */
     };
 
     for (const site in collection) {
@@ -236,20 +259,25 @@ const addDataWebsite = () => {
         }
     }
     if(!is_supported){
-        alert("Lo sentimos por el momento no podemos agregar el contenido de este sitio");
+        //alert("Lo sentimos por el momento no podemos agregar el contenido de este sitio de manera automatica. Agrega contenido seleccionando el texto y dando clic derecho");
         root = document.body;
-    }
-
-    textNodesUnder(root);
-
+    } 
+    let content = textNodesUnder(root);
+    content.forEach(element => {
+        let fiveLetters = contentInput.value.substring(0, 5);
+        let randomNumber = Math.floor(Math.random() * Math.pow(10, 10));
+        addData(fiveLetters + randomNumber, element);
+    });
+    alert("Se agrego el contenido de este sitio web");
 }
 
 //WIP
 const rejectScriptTextFilter = {
     acceptNode: function (node) {
         let match = /\r|\n/.exec(node.wholeText);
-        if (node.parentNode.nodeName !== 'SCRIPT' && match == null) {
-            console.log(node.wholeText);
+        let is_myChat_element = node.parentNode.id.includes('mychat');
+        if (node.parentNode.nodeName !== 'SCRIPT' && match == null && !is_myChat_element) { //&& match == null && whitespace.length>0
+            //console.log(node.wholeText);
             return NodeFilter.FILTER_ACCEPT;
         } else {
             return NodeFilter.FILTER_REJECT
@@ -261,10 +289,22 @@ const rejectScriptTextFilter = {
 function textNodesUnder(root) {
     var n, a = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, rejectScriptTextFilter
         , false);
+    let window = 30;  // number of sentences to combine
+    let content_data = [];
     //console.log(w);
-    while (n = w.nextNode()) a.push(n);
+    while (n = w.nextNode()){ a.push(n);};
     //console.log(a);
-    return a;
+     for (let index = 0; index < (a.length+30); index+=30) {
+        console.log("index: "+index+" window: "+window);
+        let content = a.slice(index,window).map( function(element){
+            return element.wholeText
+        }).join(" ");
+        if(content){content_data.push(content);}
+        window += 30;
+    } 
+    //console.log(a.length);
+    console.log(content_data);
+    return content_data;
 }
 //===============================
 
@@ -276,7 +316,7 @@ document.getElementById("mychat-show-signup").addEventListener("click", () => { 
 document.getElementById("mychat-logout").addEventListener("click", () => { logout() });
 contentInput = document.getElementById("mychat_new_data_textarea");
 questionInput = document.getElementById("mychat_question_textarea");
-//document.getElementById("myChat_addData-website").addEventListener("click", () => { addDataWebsite() });
+document.getElementById("mychat_addData-website").addEventListener("click", () => { addDataWebsite() });
 
 
 
